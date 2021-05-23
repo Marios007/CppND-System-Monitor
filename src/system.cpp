@@ -14,6 +14,7 @@ using std::size_t;
 using std::string;
 using std::vector;
 
+
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
@@ -26,7 +27,8 @@ std::string System::Kernel() {
     return LinuxParser::Kernel(); }
 
 // TODO: Return the system's memory utilization
-float System::MemoryUtilization() { return 0.0; }
+float System::MemoryUtilization() { 
+    return LinuxParser::MemoryUtilization(); }
 
 // get OS Name from Linux parser
 std::string System::OperatingSystem() { 

@@ -1,6 +1,7 @@
 #ifndef SYSTEM_PARSER_H
 #define SYSTEM_PARSER_H
 
+
 #include <fstream>
 #include <regex>
 #include <string>
@@ -18,6 +19,8 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+
+
 // System
 float MemoryUtilization();
 long UpTime();
@@ -26,6 +29,10 @@ int TotalProcesses();
 int RunningProcesses();
 std::string OperatingSystem();
 std::string Kernel();
+
+
+void createMemStats();
+void createCPUStats();
 
 // CPU
 enum CPUStates {
@@ -52,6 +59,29 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+
+
+//
+//class MemStats
+//{
+//public:
+//  MemStats(){}
+//  void createMemStats();
+//  std::string getMemStats(std::string key);
+//
+//private:
+//std::string filepath_ = (kProcDirectory + kMeminfoFilename);
+//std::map <std::string, std::string> mapMemStat;
+//
+//};
+//
+
+
+
+
+
+
+
 };  // namespace LinuxParser
 
 #endif
