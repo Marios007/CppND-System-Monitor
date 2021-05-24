@@ -61,27 +61,6 @@ std::string User(int pid);
 long int UpTime(int pid);
 
 
-//
-//class MemStats
-//{
-//public:
-//  MemStats(){}
-//  void createMemStats();
-//  std::string getMemStats(std::string key);
-//
-//private:
-//std::string filepath_ = (kProcDirectory + kMeminfoFilename);
-//std::map <std::string, std::string> mapMemStat;
-//
-//};
-//
-
-
-
-
-
-
-
 };  // namespace LinuxParser
 
 #endif

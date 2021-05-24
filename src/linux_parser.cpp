@@ -11,7 +11,7 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-std::map <std::string, std::string> mapMemStat = {};
+std::map<std::string, std::string> mapMemStat = {};
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
@@ -76,12 +76,11 @@ float LinuxParser::MemoryUtilization() {
   float memTotal{0};
   float memFree{0};
   float buffers{0};
- 
+
   createMemStats();
   memTotal = stoi(mapMemStat["MemTotal"]);
   memFree = stoi(mapMemStat["MemFree"]);
   buffers = stoi(mapMemStat["Buffers"]);
-
 
   float memUtil = 1.0 - (memFree / (memTotal - buffers));
 
@@ -109,9 +108,7 @@ long LinuxParser::UpTime() {
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() {
-  std::string line;
-
-  std::ifstream fileStat(kProcDirectory + kStatFilename);
+  
 
   return 0;
 }
@@ -121,13 +118,45 @@ long LinuxParser::Jiffies() {
 long LinuxParser::ActiveJiffies(int pid [[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+long LinuxParser::ActiveJiffies() {
+  std::vector<std::string> cpuStats;
+  long jiffies;
+  cpuStats = CpuUtilization();
+
+  jiffies =
+      stol(cpuStats[CPUStates::kUser_]) + stol(cpuStats[CPUStates::kNice_]) +
+      stol(cpuStats[CPUStates::kSystem_]) + stol(cpuStats[CPUStates::kIRQ_]) +
+      stol(cpuStats[CPUStates::kSoftIRQ_]) +
+      stol(cpuStats[CPUStates::kSteal_]) + stol(cpuStats[CPUStates::kGuest_]) +
+      stol(cpuStats[CPUStates::kGuestNice_]);
+
+  return jiffies;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() {
+  std::vector<string> cpuData;
+  std::string token;
+  std::string line;
+
+  std::ifstream filestream(kProcDirectory + kStatFilename);
+  if (filestream.is_open()) {
+    while (getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> token) {
+        if (token == "cpu") {
+          while (linestream >> token) cpuData.push_back(token);
+          return cpuData;
+        }
+      }
+    }
+  }
+
+  return cpuData;
+}
 
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
@@ -135,8 +164,6 @@ int LinuxParser::TotalProcesses() {
   std::string firstColumn;
   std::string secColumn;
   std::string line;
-  
-  std::vector<std::vector<std::string>> statsVec;
 
   std::ifstream filestream(kProcDirectory + kStatFilename);
 
@@ -207,14 +234,5 @@ void LinuxParser::createMemStats() {
   }
 }
 
-void LinuxParser::createCPUStats()
-{
-  std::string firstColumn;
-  std::string secColumn;
-  std::string line;
-
-  std::ifstream filestream(kProcDirectory + kStatFilename);
-  while (std::getline(filestream, line)){
-  std::istringstream linestream(line);
-  }
-}
+// std::ofstream textfile;
+// textfile.open("test.txt");

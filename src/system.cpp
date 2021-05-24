@@ -16,7 +16,11 @@ using std::vector;
 
 
 // TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu_; }
+Processor& System::Cpu() { 
+    
+
+    return cpu_; 
+}
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() { return processes_; }
@@ -40,7 +44,6 @@ int System::RunningProcesses() {
 
 // TODO: Return the total number of processes on the system
 int System::TotalProcesses() { 
-    
     return LinuxParser::TotalProcesses(); }
 
 // TODO: Return the number of seconds since the system started running
