@@ -32,7 +32,6 @@ std::string Kernel();
 
 
 void createMemStats();
-void createCPUStats();
 
 // CPU
 enum CPUStates {
@@ -48,9 +47,9 @@ enum CPUStates {
   kGuestNice_
 };
 std::vector<std::string> CpuUtilization();
-long Jiffies();
+float CpuUtilizationProc(int pid);
+
 long ActiveJiffies();
-long ActiveJiffies(int pid);
 long IdleJiffies();
 
 // Processes
