@@ -16,15 +16,16 @@ using std::size_t;
 using std::string;
 using std::vector;
 
-// TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu_; }
+// Return the system's CPU
+Processor& System::Cpu() { 
+  return cpu_; }
 
 // Return a vector of Process composed of the system's processes
 vector<Process>& System::Processes() {
   //get a vector of all PIDs from LinuxParser and add them to the vector of Processes
   processes_.clear();
   vector<int> pidList = LinuxParser::Pids();
-  
+  // create a process object with pid and get the CPU utilization for it
   for (auto& pid : pidList) {
     Process process(pid);
     process.CpuUtilization();

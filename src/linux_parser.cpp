@@ -13,8 +13,6 @@ using std::vector;
 
 std::map<std::string, std::string> mapMemStat = {};
 
-   
-
 // An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
@@ -68,8 +66,6 @@ vector<int> LinuxParser::Pids() {
     }
   }
 
-
-
   closedir(directory);
   return pids;
 }
@@ -118,11 +114,10 @@ float LinuxParser::CpuUtilizationProc(int pid) {
   std::vector<long> procCpuUtil;
   std::string value;
   long totaltime;
-   
 
   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
-    for (int i = 0; i < 22; ++i) {
+    for (int i = 0; i < 17; ++i) {
       filestream >> value;
       // 13 = utime; 14 = stime; 15 = cutime; 16 = cstime; 21 = starttime;
 
@@ -139,31 +134,20 @@ float LinuxParser::CpuUtilizationProc(int pid) {
         case 16:
           procCpuUtil.emplace_back(stol(value));
           break;
-        case 21:
-          procCpuUtil.emplace_back(stol(value));
-          break;
         default:
           break;
       }
     }
   }
 
-  
- 
   totaltime = procCpuUtil[0] + procCpuUtil[1] + procCpuUtil[2] + procCpuUtil[3];
-  float seconds = UpTime() - (procCpuUtil[4] / sysconf(_SC_CLK_TCK));
-
-  float cpu_usage = ((totaltime * 1. / (float)sysconf(_SC_CLK_TCK)) / (float)UpTime(pid));
-   if (pid == 6754){
-    std::ofstream textfile;
-  textfile.open("test.txt");
-  textfile << pid << "  ";
-  }
+  float cpu_usage =
+      ((totaltime * 1. / (float)sysconf(_SC_CLK_TCK)) / (float)UpTime(pid));
 
   return cpu_usage;
 }
 
-// TODO: Read and return the number of active jiffies for the system
+// Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
   std::vector<std::string> cpuStats;
   long jiffies;
@@ -179,7 +163,7 @@ long LinuxParser::ActiveJiffies() {
   return jiffies;
 }
 
-// TODO: Read and return the number of idle jiffies for the system
+// Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
   long idleJiffies;
   std::vector<std::string> cpuStats;
@@ -191,7 +175,7 @@ long LinuxParser::IdleJiffies() {
   return idleJiffies;
 }
 
-// TODO: Read and return CPU utilization
+// Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
   std::vector<string> cpuData;
   std::string token;
@@ -221,12 +205,14 @@ int LinuxParser::TotalProcesses() {
   std::string line;
 
   std::ifstream filestream(kProcDirectory + kStatFilename);
-
-  while (std::getline(filestream, line)) {
-    std::istringstream linestream(line);
-    std::getline(linestream, firstColumn, ' ');
-    if (firstColumn == "processes") {
-      std::getline(linestream, secColumn, ' ');
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> firstColumn) {
+        if (firstColumn == "processes") {
+          linestream >> secColumn;
+        }
+      }
     }
   }
   totalProcs = stoi(secColumn);
@@ -245,11 +231,14 @@ int LinuxParser::RunningProcesses() {
 
   std::ifstream filestream(kProcDirectory + kStatFilename);
 
-  while (std::getline(filestream, line)) {
-    std::istringstream linestream(line);
-    std::getline(linestream, firstColumn, ' ');
-    if (firstColumn == "procs_running") {
-      std::getline(linestream, secColumn, ' ');
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> firstColumn) {
+        if (firstColumn == "procs_running") {
+          linestream >> secColumn;
+        }
+      }
     }
   }
   runningProcs = stoi(secColumn);
@@ -333,7 +322,7 @@ long LinuxParser::UpTime(int pid) {
   if (filestream.is_open()) {
     for (int i = 0; filestream >> token; ++i)
       if (i == 21) {
-        uptime = UpTime() - (stol(token)/sysconf(_SC_CLK_TCK));
+        uptime = UpTime() - (stol(token) / sysconf(_SC_CLK_TCK));
         return uptime;
       }
   }
@@ -352,6 +341,3 @@ void LinuxParser::createMemStats() {
     mapMemStat[key] = value;
   }
 }
-
-// std::ofstream textfile;
-// textfile.open("test.txt");

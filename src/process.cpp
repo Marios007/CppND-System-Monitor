@@ -37,11 +37,11 @@ string Process::User() {
 long int Process::UpTime() { 
     return LinuxParser::UpTime(Pid()); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
+// Overload the "less than" comparison operator for Process objects
 bool Process::operator<(Process const& a) const { 
     return  cpuUtil_>a.cpuUtil_; }
 
+// Overload the "more than" comparison operator for Process objects
 bool Process::operator>(Process const& a) const {
     return cpuUtil_<a.cpuUtil_;
  }
