@@ -17,12 +17,6 @@ int Process::Pid() { return pid_; }
 // Return this process's CPU utilization from LinuxParser
 float Process::CpuUtilization() { 
     cpuUtil_=LinuxParser::CpuUtilizationProc(Pid());
-     
-   //  if (Pid() == 6710){
-   //  std::ofstream textfile;
-   //  textfile.open("test.txt");
-   //  textfile << Pid() << " " << cpuUtil_ << "\n";
-     
     return cpuUtil_;
    }
 

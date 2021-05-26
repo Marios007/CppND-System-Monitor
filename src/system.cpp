@@ -24,7 +24,7 @@ vector<Process>& System::Processes() {
   //get a vector of all PIDs from LinuxParser and add them to the vector of Processes
   vector<int> pidList = LinuxParser::Pids();
   
-  for (int& pid : pidList) {
+  for (auto& pid : pidList) {
     processes_.emplace_back(Process(pid));
   }
   //sort processes by CPU Utilization
