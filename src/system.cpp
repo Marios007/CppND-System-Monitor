@@ -22,10 +22,13 @@ Processor& System::Cpu() { return cpu_; }
 // Return a vector of Process composed of the system's processes
 vector<Process>& System::Processes() {
   //get a vector of all PIDs from LinuxParser and add them to the vector of Processes
+  processes_.clear();
   vector<int> pidList = LinuxParser::Pids();
   
   for (auto& pid : pidList) {
-    processes_.emplace_back(Process(pid));
+    Process process(pid);
+    process.CpuUtilization();
+    processes_.emplace_back(process);
   }
   //sort processes by CPU Utilization
   std::sort(processes_.begin(), processes_.end());
