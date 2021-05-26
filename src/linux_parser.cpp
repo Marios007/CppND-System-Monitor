@@ -104,6 +104,7 @@ long LinuxParser::UpTime() {
   }
   uptime = stol(uptimeStr);
 
+  stream.close();
   return uptime;
 }
 
@@ -144,6 +145,7 @@ float LinuxParser::CpuUtilizationProc(int pid) {
   float cpu_usage =
       ((totaltime * 1. / (float)sysconf(_SC_CLK_TCK)) / (float)UpTime(pid));
 
+  filestream.close();
   return cpu_usage;
 }
 
@@ -267,14 +269,16 @@ string LinuxParser::Ram(int pid) {
 
   if (filestream.is_open()) {
     while (filestream >> token) {
-      if (token == "VmSize:") {
+      if (token == "VmData:") {
         if (filestream >> stringRam) {
           stringRam = to_string(stoi(stringRam) / 1024);
+          filestream.close();
           return stringRam;
         }
       }
     }
   }
+  filestream.close();
   return "0";
 }
 
@@ -289,11 +293,13 @@ string LinuxParser::Uid(int pid) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
         if (key == "Uid:") {
+          filestream.close();
           return value;
         }
       }
     }
   }
+  filestream.close();
   return " ";
 }
 
@@ -310,6 +316,7 @@ string LinuxParser::User(int pid) {
       if (uid == Uid(pid)) return name;
     }
   }
+  filestream.close();
   return string(" ");
 }
 
@@ -323,9 +330,11 @@ long LinuxParser::UpTime(int pid) {
     for (int i = 0; filestream >> token; ++i)
       if (i == 21) {
         uptime = UpTime() - (stol(token) / sysconf(_SC_CLK_TCK));
+        filestream.close();
         return uptime;
       }
   }
+  filestream.close();
   return uptime;
 }
 
@@ -340,4 +349,5 @@ void LinuxParser::createMemStats() {
     linestream >> key >> value;
     mapMemStat[key] = value;
   }
+  filestream.close();
 }
