@@ -29,6 +29,7 @@ vector<Process>& System::Processes() {
   }
   //sort processes by CPU Utilization
   std::sort(processes_.begin(), processes_.end());
+  
   return processes_;
 }
 

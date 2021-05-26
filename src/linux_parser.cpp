@@ -13,7 +13,9 @@ using std::vector;
 
 std::map<std::string, std::string> mapMemStat = {};
 
-// DONE: An example of how to read data from the filesystem
+   
+
+// An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
   string key;
@@ -65,6 +67,9 @@ vector<int> LinuxParser::Pids() {
       }
     }
   }
+
+
+
   closedir(directory);
   return pids;
 }
@@ -113,6 +118,7 @@ float LinuxParser::CpuUtilizationProc(int pid) {
   std::vector<long> procCpuUtil;
   std::string value;
   long totaltime;
+   
 
   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
@@ -142,10 +148,17 @@ float LinuxParser::CpuUtilizationProc(int pid) {
     }
   }
 
+  
+ 
   totaltime = procCpuUtil[0] + procCpuUtil[1] + procCpuUtil[2] + procCpuUtil[3];
   float seconds = UpTime() - (procCpuUtil[4] / sysconf(_SC_CLK_TCK));
 
-  float cpu_usage = ((totaltime * 1. / sysconf(_SC_CLK_TCK)) / seconds);
+  float cpu_usage = ((totaltime * 1. / (float)sysconf(_SC_CLK_TCK)) / (float)UpTime(pid));
+   if (pid == 6754){
+    std::ofstream textfile;
+  textfile.open("test.txt");
+  textfile << pid << "  ";
+  }
 
   return cpu_usage;
 }
@@ -265,7 +278,7 @@ string LinuxParser::Ram(int pid) {
 
   if (filestream.is_open()) {
     while (filestream >> token) {
-      if (token == "VmData:") {
+      if (token == "VmSize:") {
         if (filestream >> stringRam) {
           stringRam = to_string(stoi(stringRam) / 1024);
           return stringRam;
@@ -320,13 +333,14 @@ long LinuxParser::UpTime(int pid) {
   if (filestream.is_open()) {
     for (int i = 0; filestream >> token; ++i)
       if (i == 21) {
-        uptime = stol(token)/sysconf(_SC_CLK_TCK);
+        uptime = UpTime() - (stol(token)/sysconf(_SC_CLK_TCK));
         return uptime;
       }
   }
   return uptime;
 }
 
+// creating and filling a Map with all memory statistics
 void LinuxParser::createMemStats() {
   std::string line, key, value;
 
